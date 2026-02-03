@@ -4,7 +4,14 @@ import time
 from datetime import datetime
 
 class Steward:
-    def __init__(self, db_path="/data/vault/steward.db"):
+    def __init__(self, db_path=None):
+        if db_path is None:
+            # Check if running in Docker or Local
+            if os.path.exists("/data/vault"):
+                db_path = "/data/vault/steward.db"
+            else:
+                db_path = os.path.join(os.path.dirname(__file__), "steward.db")
+        
         self.db_path = db_path
         self._init_db()
 
