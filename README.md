@@ -1,8 +1,8 @@
-# 🛡️ Scam Waster Gauntlet: The Sovereign Dojo
+# 🛡️ myTIME: The Sovereign Dojo
 
 **"We don't block. We engage. We exhaust."**
 
-The Scam Waster Gauntlet is a decentralized system designed to turn the tide against social engineering. By utilizing the "Building Crew" model of specialized AI agents, we transform a nuisance into a high-fidelity "Learning Repo" for the future of Angelic Intelligence.
+`myTIME` is a decentralized system designed to turn the tide against social engineering. By utilizing the "Building Crew" model of specialized AI agents, we transform a nuisance into a high-fidelity "Learning Repo" for the future of Angelic Intelligence.
 
 ## 🚀 The Philosophy
 Based on the principle of **"Giving it away to keep it,"** this template is a blueprint for a community-governed defense system. We aim for a future of no abuse by making the cost of scamming higher than the reward.
