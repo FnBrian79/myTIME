@@ -1,0 +1,20 @@
+# myTIME .gitignore
+# Ignore logs and secrets, but keep configurations
+
+# Database & Vault
+learning_repo/*.db
+learning_repo/forensic_ledger.jsonl
+learning_repo/keys/
+
+# Logs
+logs/*.log
+
+# Foreman Private Logic (ensure triage doesn't leak info)
+# services/foreman/triage.py  <-- Optional: Only if you want to keep the logic private. 
+# For now, we keep the code but ignore any data it generates.
+
+# Docker
+.DS_Store
+*.swp
+__pycache__/
+*.pyc
