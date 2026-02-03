@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>myTIME | Sovereign Dojo Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="cyber-container">
+        <header>
+            <h1 class="glitch" data-text="myTIME">myTIME</h1>
+            <p class="subtitle">Sovereign Scam-Waster Gauntlet</p>
+        </header>
+
+        <main>
+            <section class="stats-panel">
+                <div class="card user-stats">
+                    <h2>Live Stats: <span id="user-id">Brian_Sovereign</span></h2>
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <label>Level</label>
+                            <span id="stat-level" class="neon-text">14</span>
+                        </div>
+                        <div class="stat-item">
+                            <label>Credits</label>
+                            <span id="stat-credits" class="neon-text">2,450</span>
+                        </div>
+                        <div class="stat-item">
+                            <label>Time Wasted</label>
+                            <span id="stat-time" class="neon-text">12h 45m</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="leaderboard-panel">
+                <div class="card">
+                    <h2>Sovereign Sentinels Leaderboard</h2>
+                    <table id="leaderboard">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Sentinel</th>
+                                <th>Level</th>
+                                <th>Time Wasted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="status-bar">
+                <span class="pulse"></span> System Status: ENGAGED | Dojo Mode: AGGRESSIVE
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
