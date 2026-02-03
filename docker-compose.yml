@@ -78,6 +78,27 @@ services:
     networks:
       - dojo-mesh
 
+  # --- THE BRIDGE (ElevenLabs Voice Synthesis & WebSocket Relay) ---
+  bridge:
+    build:
+      context: ./services/bridge
+    container_name: gauntlet-bridge
+    ports:
+      - "8000:8000" # WebSocket + REST API
+    environment:
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY:-}
+      - ELEVENLABS_VOICE_ID=${ELEVENLABS_VOICE_ID:-}
+      - ELEVENLABS_MODEL_ID=${ELEVENLABS_MODEL_ID:-eleven_monolingual_v1}
+      - OLLAMA_URL=http://ollama:11434
+      - ACTOR_HOST=http://actor:8000
+      - FOREMAN_HOST=http://triage-api:8080
+    depends_on:
+      - ollama
+      - actor
+      - triage-api
+    networks:
+      - dojo-mesh
+
   # --- THE STEWARD (Gamification & Credits) ---
   steward:
     build:
