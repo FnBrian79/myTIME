@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # --- THE FOREMAN (Coordination & SIP Bridge) ---
+  asterisk:
+    image: agentvoiceresponse/avr-asterisk:latest
+    container_name: gauntlet-foreman
+    ports:
+      - "5060:5060/udp" # SIP Signaling
+      - "10000-10100:10000-10100/udp" # RTP Audio Stream
+    volumes:
+      - ./config/asterisk:/etc/asterisk
+    networks:
+      - dojo-mesh
+
+  # --- THE ACTOR (Local AI Inference via Ollama) ---
+  ollama:
+    image: ollama/ollama:latest
+    container_name: gauntlet-actor
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - dojo-mesh
+
+  # --- THE ARCHITECT (Voice Processing & Handover Logic) ---
+  voice-bridge:
+    image: agentvoiceresponse/avr-asr-vosk:latest
+    container_name: gauntlet-architect
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - PERSONA=hazel_old_lady # Default persona
+    depends_on:
+      - ollama
+    networks:
+      - dojo-mesh
+
+  # --- THE AUDITOR (AEAD Masking & Learning Repo) ---
+  learning-repo:
+    build:
+      context: ./services/auditor
+    container_name: gauntlet-auditor
+    volumes:
+      - ./learning_repo:/data/vault
+      - ./logs:/var/log/gauntlet
+    networks:
+      - dojo-mesh
+
+  # --- THE STEWARD (Gamification & Credits) ---
+  steward:
+    build:
+      context: ./services/steward
+    container_name: gauntlet-steward
+    environment:
+      - DB_PATH=/data/vault/steward.db
+    volumes:
+      - ./learning_repo:/data/vault
+    networks:
+      - dojo-mesh
+
+networks:
+  dojo-mesh:
+    driver: bridge
+
+volumes:
+  ollama_data:
