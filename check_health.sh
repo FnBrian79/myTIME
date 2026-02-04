@@ -60,9 +60,12 @@ fi
 
 echo ""
 echo "📊 Quick Stats:"
-echo "   - Directory Structure: $([ -d learning_repo ] && echo -e '${GREEN}✓${NC}' || echo -e '${RED}✗${NC}')"
-echo "   - Master Key: $([ -f config/master.key ] && echo -e '${GREEN}✓${NC}' || echo -e '${RED}✗${NC}')"
-echo "   - Config File: $([ -f config/settings.yaml ] && echo -e '${GREEN}✓${NC}' || echo -e '${RED}✗${NC}')"
+echo -n "   - Directory Structure: "
+[ -d learning_repo ] && echo -e "${GREEN}✓${NC}" || echo -e "${RED}✗${NC}"
+echo -n "   - Master Key: "
+[ -f config/master.key ] && echo -e "${GREEN}✓${NC}" || echo -e "${RED}✗${NC}"
+echo -n "   - Config File: "
+[ -f config/settings.yaml ] && echo -e "${GREEN}✓${NC}" || echo -e "${RED}✗${NC}"
 
 echo ""
 echo "🛡️ The Building Crew status check complete."

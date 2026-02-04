@@ -5,6 +5,12 @@ set -e
 
 echo "⏳ Initializing myTIME Gauntlet on The Beast..."
 
+# Verify Python3 is available
+if ! command -v python3 &> /dev/null; then
+    echo "❌ Error: python3 is required but not installed."
+    exit 1
+fi
+
 # Create Infrastructure
 mkdir -p learning_repo/{vault,metadata} logs/{foreman,actor,architect,auditor,steward} config
 
@@ -12,7 +18,10 @@ mkdir -p learning_repo/{vault,metadata} logs/{foreman,actor,architect,auditor,st
 if [ ! -f config/master.key ]; then
   echo "🔑 Generating v2.4 AEAD Master Key..."
   # Uses python to generate a secure 32-byte key
-  python3 -c "import os; print(os.urandom(32).hex())" > config/master.key
+  python3 -c "import os; print(os.urandom(32).hex())" > config/master.key || {
+    echo "❌ Failed to generate master key"
+    exit 1
+  }
   chmod 600 config/master.key
 fi
 

@@ -40,16 +40,30 @@ def decrypt_transcript(persona_id, encrypted_data, master_key_hex):
     plaintext = aesgcm.decrypt(nonce, ciphertext, aad)
     return plaintext.decode()
 
-def load_master_key(key_path="/app/config/master.key"):
+def load_master_key(key_path=None):
     """
     Loads the master key from the config file.
     
     Args:
-        key_path: Path to the master key file
+        key_path: Path to the master key file. If None, tries default locations.
     
     Returns:
         str: The master key in hex format
     """
+    if key_path is None:
+        # Try common locations
+        possible_paths = [
+            "/app/config/master.key",  # Docker container
+            "config/master.key",        # Local relative
+            "../config/master.key",     # From services directory
+        ]
+        for path in possible_paths:
+            if os.path.exists(path):
+                key_path = path
+                break
+        else:
+            raise Exception("Master key not found. Run bootstrap script first or provide key_path.")
+    
     try:
         with open(key_path, 'r') as f:
             return f.read().strip()

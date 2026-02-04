@@ -99,12 +99,15 @@ def status():
     })
 
 if __name__ == "__main__":
+    auditor = Auditor()
     print("Auditor Service (v2.4 AEAD) Initialized.")
     
-    # Test Entry
-    test_content = "Mock scam call transcript fragment: 'I need your password...'"
-    entry = auditor.process_log_entry("CALL_FRAGMENT", test_content, "Brian_Sovereign")
-    auditor.write_to_ledger(entry)
+    # Only run test in development mode
+    if os.environ.get('AUDITOR_DEV_MODE'):
+        print("Running in development mode - executing test entry")
+        test_content = "Mock scam call transcript fragment: 'I need your password...'"
+        entry = auditor.process_log_entry("CALL_FRAGMENT", test_content, "Brian_Sovereign")
+        auditor.write_to_ledger(entry)
     
     # Start Flask server
     port = int(os.environ.get("PORT", 5001))
