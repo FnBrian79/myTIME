@@ -1,0 +1,8 @@
+voice_provider: elevenlabs
+model_id: eleven_flash_v2_5  # Ultra-low latency for live calls
+voice_id: YOUR_CLONED_VOICE_ID
+settings:
+  stability: 0.45       # Lower = more expressive/Brian-like
+  similarity_boost: 0.8 # High = keeps your specific tone
+  style_exaggeration: 0.2
+  latency: 1            # Prioritize speed over quality (for real-time)

@@ -19,6 +19,27 @@ class Auditor:
                 f.write(os.urandom(32)) # Generate a random 256-bit key
             print(f"Generated new v2.4 AEAD key at {self.key_path}")
 
+    def detect_voice_theft(self, audio_metadata):
+        """
+        Simulates detection of recording software or specific 'Sampling' patterns.
+        """
+        # Placeholder: If certain frequencies or patterns are detected
+        if audio_metadata.get("recording_signal_detected"):
+            print("🚨 [AUDITOR] Voice sampling detected! Triggering KILL SWITCH.")
+            return True
+        return False
+
+    def trigger_voice_swap(self, actor_url="http://actor:8000"):
+        """Orders the Actor to swap from cloned voice to a decoy."""
+        try:
+            # This would signal the Actor container to change its voice ID
+            # requests.post(f"{actor_url}/pivot-voice", json={"voice_id": "hazel_decoy"})
+            print("👤 [AUDITOR] Identity Guard: Voice swapped to Hazel Decoy.")
+            return True
+        except Exception as e:
+            print(f"❌ [AUDITOR] Failed to trigger voice swap: {e}")
+            return False
+
     def sign_transaction(self, payload):
         """
         Applies a HMAC-SHA256 signature to the payload, 

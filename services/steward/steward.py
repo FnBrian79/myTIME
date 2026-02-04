@@ -48,7 +48,7 @@ class Steward:
         conn.commit()
         conn.close()
 
-    def calculate_credits(self, duration_seconds, is_unique=False, ai_on_ai=False, mode="auto"):
+    def calculate_credits(self, duration_seconds, is_unique=False, ai_on_ai=False, mode="auto", is_cloned_voice=False):
         # Base: 10 credits per minute
         base_credits = (duration_seconds // 60) * 10
         
@@ -61,6 +61,8 @@ class Steward:
         
         multiplier = mode_multipliers.get(mode, 1.0)
         
+        if is_cloned_voice:
+            multiplier *= 2.0 # Doppelgänger Bonus
         if is_unique:
             multiplier += 2.0  # 3x for new/unique scams
         if ai_on_ai:
@@ -68,8 +70,8 @@ class Steward:
             
         return int(base_credits * multiplier)
 
-    def log_call(self, user_id, session_id, duration_seconds, scam_type="unknown", is_unique=False, ai_on_ai=False, mode="auto"):
-        credits_earned = self.calculate_credits(duration_seconds, is_unique, ai_on_ai, mode)
+    def log_call(self, user_id, session_id, duration_seconds, scam_type="unknown", is_unique=False, ai_on_ai=False, mode="auto", is_cloned_voice=False):
+        credits_earned = self.calculate_credits(duration_seconds, is_unique, ai_on_ai, mode, is_cloned_voice)
         xp_earned = duration_seconds // 10 # 1 XP per 10 seconds
         
         conn = sqlite3.connect(self.db_path)
