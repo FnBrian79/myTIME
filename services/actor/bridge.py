@@ -15,8 +15,19 @@ ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY", "your_api_key")
 VOICE_ID = voice_config.get("voice_id", "your_brian_clone_id")
 ASTERISK_IP = "0.0.0.0"
 AUDIOSOCKET_PORT = int(os.environ.get("AUDIOSOCKET_PORT", 9092))
+INTERRUPT_THRESHOLD = 500  # RMS energy threshold for barge-in detection
 
 client = AsyncElevenLabs(api_key=ELEVENLABS_API_KEY)
+
+def calculate_energy(audio_data):
+    """Calculates RMS energy of raw SLIN audio (16-bit)."""
+    import struct
+    if not audio_data: return 0
+    count = len(audio_data) // 2
+    format = "<" + "h" * count
+    shorts = struct.unpack(format, audio_data)
+    sum_squares = sum(s*s for s in shorts)
+    return (sum_squares / count) ** 0.5
 
 async def handle_asterisk_connection(reader, writer):
     print("🚀 Scammer connected to the Dojo.")
@@ -25,11 +36,14 @@ async def handle_asterisk_connection(reader, writer):
     async def read_from_scammer():
         while True:
             try:
-                data = await reader.read(320) # Read raw audio frames
+                data = await reader.read(320) # 20ms of audio @ 8kHz SLIN
                 if not data: break
-                # Logic to detect 'Interruptions': 
-                # If Brian (user) is speaking or AI should 'Barge in'
-                # if detect_voice_activity(data): trigger_bargin()
+                
+                energy = calculate_energy(data)
+                if energy > INTERRUPT_THRESHOLD:
+                    print(f"🔥 [BARGE-IN] Scammer energy detected: {energy:.2f}")
+                    # Signal the write task to pivot or pause
+                    # This would ideally cancel the current stream and start a "Soft Interrupt"
             except Exception as e:
                 print(f"Read error: {e}")
                 break

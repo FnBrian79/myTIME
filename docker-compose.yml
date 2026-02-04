@@ -40,15 +40,24 @@ services:
     networks:
       - dojo-mesh
 
-  # --- THE ARCHITECT (Voice Processing & Master-Student Observer) ---
+  # --- THE ARCHITECT (Voice Processing & Deepfake Detection) ---
   architect:
-    image: agentvoiceresponse/avr-asr-vosk:latest
+    build:
+      context: ./services/architect
     container_name: gauntlet-architect
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
     environment:
       - OLLAMA_HOST=http://ollama:11434
       - ACTOR_HOST=http://actor:8000
     volumes:
       - ./services/architect/observer_prompt.txt:/app/prompts/observer_prompt.txt
+      - ./learning_repo/models:/app/models
     depends_on:
       - ollama
       - actor

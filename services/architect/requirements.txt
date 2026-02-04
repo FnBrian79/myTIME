@@ -1,0 +1,6 @@
+torch
+torchaudio
+transformers
+flask
+requests
+numpy
