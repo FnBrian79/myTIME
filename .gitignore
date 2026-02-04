@@ -18,3 +18,9 @@ logs/*.log
 *.swp
 __pycache__/
 *.pyc
+
+# Testing & Coverage
+.coverage
+.pytest_cache/
+htmlcov/
+*.cover
