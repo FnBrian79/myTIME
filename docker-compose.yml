@@ -92,10 +92,12 @@ services:
       - OLLAMA_URL=http://ollama:11434
       - ACTOR_HOST=http://actor:8000
       - FOREMAN_HOST=http://triage-api:8080
+      - STEWARD_HOST=http://steward:8080
     depends_on:
       - ollama
       - actor
       - triage-api
+      - steward
     networks:
       - dojo-mesh
 
@@ -104,8 +106,11 @@ services:
     build:
       context: ./services/steward
     container_name: gauntlet-steward
+    ports:
+      - "8080:8080" # Steward API + Dashboard
     environment:
       - DB_PATH=/data/vault/steward.db
+      - PORT=8080
     volumes:
       - ./learning_repo:/data/vault
     networks:

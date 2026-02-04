@@ -2,7 +2,8 @@
  * BridgeClient - WebSocket client for the myTIME Dojo Bridge
  *
  * Connects to the FastAPI bridge service and streams ElevenLabs audio
- * in real-time to the Android client.
+ * in real-time to the Android client. Supports Barge-In for
+ * Master-Student live call takeover (5x XP mode).
  */
 
 const BRIDGE_WS_URL =
@@ -16,8 +17,20 @@ class BridgeClient {
     this.onAudioChunk = null;
     this.onStatusUpdate = null;
     this.onError = null;
+    this.onBargeInAck = null;
+    this.onSessionScored = null;
     this.reconnectAttempts = 0;
     this.maxReconnectAttempts = 5;
+    this._bargedIn = false;
+    this._sessionId = null;
+  }
+
+  get isBargedIn() {
+    return this._bargedIn;
+  }
+
+  get sessionId() {
+    return this._sessionId;
   }
 
   connect() {
@@ -33,8 +46,18 @@ class BridgeClient {
       this.ws.onmessage = (event) => {
         if (typeof event.data === 'string') {
           const msg = JSON.parse(event.data);
+
           if (msg.error) {
             this.onError?.(msg.error);
+          } else if (msg.status === 'barge_in_ack') {
+            this._bargedIn = true;
+            this._sessionId = msg.session_id;
+            this.onBargeInAck?.(msg);
+          } else if (msg.status === 'barge_out_ack') {
+            this._bargedIn = false;
+            this.onBargeInAck?.(msg);
+          } else if (msg.status === 'session_scored') {
+            this.onSessionScored?.(msg);
           } else {
             this.onStatusUpdate?.(msg);
           }
@@ -52,6 +75,7 @@ class BridgeClient {
 
       this.ws.onclose = () => {
         console.log('[BridgeClient] Disconnected');
+        this._bargedIn = false;
         this._attemptReconnect();
       };
     });
@@ -61,9 +85,7 @@ class BridgeClient {
    * Request direct text-to-speech streaming.
    */
   requestTTS(text, voiceId = null) {
-    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      throw new Error('Not connected to Dojo Bridge');
-    }
+    this._ensureConnected();
     this.ws.send(
       JSON.stringify({
         action: 'tts',
@@ -78,9 +100,7 @@ class BridgeClient {
    * Triage -> Actor persona response -> ElevenLabs TTS stream
    */
   requestCombat(callerNumber, transcript, persona = 'hazel') {
-    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      throw new Error('Not connected to Dojo Bridge');
-    }
+    this._ensureConnected();
     this.ws.send(
       JSON.stringify({
         action: 'combat',
@@ -91,8 +111,55 @@ class BridgeClient {
     );
   }
 
+  /**
+   * BARGE-IN: Human takes over the call from the AI persona.
+   * Switches the session to "live" mode (5x XP via Steward).
+   *
+   * The bridge will:
+   *  1. Stop the current ElevenLabs audio stream
+   *  2. Notify the Steward that mode switched to "live"
+   *  3. Route the caller's audio directly to the human's mic/speaker
+   *  4. Respond with {"status": "barge_in_ack", "session_id": "..."}
+   */
+  bargeIn(userId = null) {
+    this._ensureConnected();
+    console.log('[BridgeClient] BARGE-IN requested');
+    this.ws.send(
+      JSON.stringify({
+        action: 'barge_in',
+        ...(userId && { user_id: userId }),
+      })
+    );
+  }
+
+  /**
+   * BARGE-OUT: Hand the call back to the AI persona.
+   * Resumes auto/handoff mode. The Steward logs the live segment duration.
+   */
+  bargeOut(persona = null) {
+    this._ensureConnected();
+    console.log('[BridgeClient] BARGE-OUT requested');
+    this._bargedIn = false;
+    this.ws.send(
+      JSON.stringify({
+        action: 'barge_out',
+        ...(persona && { persona }),
+      })
+    );
+  }
+
+  /**
+   * End the current combat session and trigger Steward scoring.
+   */
+  endSession() {
+    this._ensureConnected();
+    this._bargedIn = false;
+    this.ws.send(JSON.stringify({ action: 'end_session' }));
+  }
+
   disconnect() {
-    this.maxReconnectAttempts = 0; // Prevent auto-reconnect
+    this.maxReconnectAttempts = 0;
+    this._bargedIn = false;
     if (this.ws) {
       this.ws.close();
       this.ws = null;
@@ -105,6 +172,12 @@ class BridgeClient {
   static async checkHealth() {
     const resp = await fetch(`${BRIDGE_HTTP_URL}/health`);
     return resp.json();
+  }
+
+  _ensureConnected() {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      throw new Error('Not connected to Dojo Bridge');
+    }
   }
 
   _attemptReconnect() {
