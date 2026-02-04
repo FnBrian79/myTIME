@@ -5,8 +5,11 @@ Test script to verify the AEAD crypto utilities work correctly.
 import sys
 import os
 
+# Get the project root directory
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
 # Add services/auditor to path
-sys.path.insert(0, '/home/runner/work/myTIME/myTIME/services/auditor')
+sys.path.insert(0, os.path.join(PROJECT_ROOT, 'services', 'auditor'))
 
 from crypto_utils import encrypt_transcript, decrypt_transcript, load_master_key
 
@@ -14,8 +17,9 @@ def test_crypto_utils():
     print("🔐 Testing AEAD Crypto Utilities...")
     
     # Load the generated master key
+    master_key_path = os.path.join(PROJECT_ROOT, 'config', 'master.key')
     try:
-        master_key_hex = load_master_key('/home/runner/work/myTIME/myTIME/config/master.key')
+        master_key_hex = load_master_key(master_key_path)
         print(f"✅ Master key loaded: {master_key_hex[:16]}... ({len(master_key_hex)} chars)")
     except Exception as e:
         print(f"❌ Failed to load master key: {e}")

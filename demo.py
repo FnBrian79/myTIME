@@ -55,11 +55,15 @@ def show_directory_structure():
 def show_crypto_demo():
     print_header("AEAD Crypto System Demo")
     
-    sys.path.insert(0, '/home/runner/work/myTIME/myTIME/services/auditor')
+    # Get the project root directory
+    project_root = os.path.dirname(os.path.abspath(__file__))
+    
+    sys.path.insert(0, os.path.join(project_root, 'services', 'auditor'))
     from crypto_utils import encrypt_transcript, decrypt_transcript, load_master_key
     
     # Load key
-    master_key = load_master_key('/home/runner/work/myTIME/myTIME/config/master.key')
+    master_key_path = os.path.join(project_root, 'config', 'master.key')
+    master_key = load_master_key(master_key_path)
     print(f"🔑 Master Key: {master_key[:16]}...{master_key[-16:]}")
     print(f"   Length: {len(master_key)} hex chars (32 bytes)")
     

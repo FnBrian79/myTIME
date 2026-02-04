@@ -6,6 +6,9 @@ import sys
 import os
 import importlib.util
 
+# Get the project root directory
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
 def load_module_from_file(module_name, file_path):
     """Dynamically load a Python module from a file path."""
     spec = importlib.util.spec_from_file_location(module_name, file_path)
@@ -18,11 +21,11 @@ def test_health_endpoints():
     print("🏥 Testing Health Endpoints Implementation...\n")
     
     services = [
-        ("Foreman", "/home/runner/work/myTIME/myTIME/services/foreman/triage.py", "/health"),
-        ("Actor", "/home/runner/work/myTIME/myTIME/services/actor/actor.py", "/health"),
-        ("Architect", "/home/runner/work/myTIME/myTIME/services/architect/architect_stream.py", "/health"),
-        ("Auditor", "/home/runner/work/myTIME/myTIME/services/auditor/auditor.py", "/health"),
-        ("Steward", "/home/runner/work/myTIME/myTIME/services/steward/api.py", "/health"),
+        ("Foreman", os.path.join(PROJECT_ROOT, "services/foreman/triage.py"), "/health"),
+        ("Actor", os.path.join(PROJECT_ROOT, "services/actor/actor.py"), "/health"),
+        ("Architect", os.path.join(PROJECT_ROOT, "services/architect/architect_stream.py"), "/health"),
+        ("Auditor", os.path.join(PROJECT_ROOT, "services/auditor/auditor.py"), "/health"),
+        ("Steward", os.path.join(PROJECT_ROOT, "services/steward/api.py"), "/health"),
     ]
     
     all_passed = True
@@ -68,13 +71,13 @@ def test_bootstrap_artifacts():
     print("🔍 Testing Bootstrap Artifacts...\n")
     
     checks = [
-        ("Bootstrap Script", "/home/runner/work/myTIME/myTIME/run.sh"),
-        ("Health Check Script", "/home/runner/work/myTIME/myTIME/check_health.sh"),
-        ("Master Key", "/home/runner/work/myTIME/myTIME/config/master.key"),
-        ("Settings Config", "/home/runner/work/myTIME/myTIME/config/settings.yaml"),
-        ("Learning Repo Vault", "/home/runner/work/myTIME/myTIME/learning_repo/vault"),
-        ("Learning Repo Metadata", "/home/runner/work/myTIME/myTIME/learning_repo/metadata"),
-        ("Logs Directory", "/home/runner/work/myTIME/myTIME/logs"),
+        ("Bootstrap Script", os.path.join(PROJECT_ROOT, "run.sh")),
+        ("Health Check Script", os.path.join(PROJECT_ROOT, "check_health.sh")),
+        ("Master Key", os.path.join(PROJECT_ROOT, "config/master.key")),
+        ("Settings Config", os.path.join(PROJECT_ROOT, "config/settings.yaml")),
+        ("Learning Repo Vault", os.path.join(PROJECT_ROOT, "learning_repo/vault")),
+        ("Learning Repo Metadata", os.path.join(PROJECT_ROOT, "learning_repo/metadata")),
+        ("Logs Directory", os.path.join(PROJECT_ROOT, "logs")),
     ]
     
     all_passed = True
