@@ -3,6 +3,9 @@ import time
 import json
 import hashlib
 import hmac
+from flask import Flask, jsonify
+
+app = Flask(__name__)
 
 class Auditor:
     def __init__(self, key_path="/data/vault/keys/v2.4_aead.key"):
@@ -73,11 +76,36 @@ class Auditor:
             f.write(json.dumps(signed_entry) + "\n")
         print(f"📜 [AUDITOR] Inscribed transaction in ledger: {signed_entry['signature'][:12]}...")
 
+auditor = Auditor()
+
+@app.route('/health')
+def health():
+    """Health check endpoint for service monitoring."""
+    return jsonify({
+        "status": "active",
+        "service": "auditor",
+        "mode": "Sovereign",
+        "integrity": "verified"
+    })
+
+@app.route('/status')
+def status():
+    """Extended status information."""
+    return jsonify({
+        "status": "active",
+        "service": "auditor",
+        "key_path": auditor.key_path,
+        "key_exists": os.path.exists(auditor.key_path)
+    })
+
 if __name__ == "__main__":
-    auditor = Auditor()
     print("Auditor Service (v2.4 AEAD) Initialized.")
     
     # Test Entry
     test_content = "Mock scam call transcript fragment: 'I need your password...'"
     entry = auditor.process_log_entry("CALL_FRAGMENT", test_content, "Brian_Sovereign")
     auditor.write_to_ledger(entry)
+    
+    # Start Flask server
+    port = int(os.environ.get("PORT", 5001))
+    app.run(host='0.0.0.0', port=port)

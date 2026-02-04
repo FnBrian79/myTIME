@@ -5,9 +5,20 @@
 learning_repo/*.db
 learning_repo/forensic_ledger.jsonl
 learning_repo/keys/
+learning_repo/vault/
+learning_repo/metadata/
 
 # Logs
 logs/*.log
+logs/foreman/
+logs/actor/
+logs/architect/
+logs/auditor/
+logs/steward/
+
+# Config (generated keys and runtime config)
+config/master.key
+config/settings.yaml
 
 # Foreman Private Logic (ensure triage doesn't leak info)
 # services/foreman/triage.py  <-- Optional: Only if you want to keep the logic private. 

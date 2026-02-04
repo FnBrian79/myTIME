@@ -2,7 +2,10 @@ import yaml
 import requests
 import json
 import os
+from flask import Flask, jsonify, request
 from hallucination_engine import HallucinationEngine
+
+app = Flask(__name__)
 
 class Actor:
     def __init__(self, ollama_url="http://ollama:11434", model="llama3"):
@@ -47,11 +50,40 @@ class Actor:
         except Exception as e:
             return f"Error connecting to Actor Model: {str(e)}"
 
+actor = Actor()
+
+@app.route('/health')
+def health():
+    """Health check endpoint for service monitoring."""
+    return jsonify({
+        "status": "active",
+        "service": "actor",
+        "mode": "Sovereign",
+        "integrity": "verified",
+        "current_persona": actor.current_persona
+    })
+
+@app.route('/set_persona', methods=['POST'])
+def set_persona_route():
+    """Endpoint to change the current persona."""
+    data = request.json
+    persona_name = data.get('persona_name')
+    if persona_name:
+        actor.set_persona(persona_name)
+        return jsonify({"success": True, "persona": actor.current_persona})
+    return jsonify({"success": False, "error": "No persona_name provided"}), 400
+
+@app.route('/generate', methods=['POST'])
+def generate_response_route():
+    """Endpoint to generate a response from the actor."""
+    data = request.json
+    transcript_history = data.get('transcript_history', [])
+    response = actor.generate_response(transcript_history)
+    return jsonify({"response": response})
+
 if __name__ == "__main__":
-    actor = Actor()
     print(f"Actor Service Started. Using Persona: {actor.current_persona}")
     
-    # Mock Interaction
-    history = ["Scammer: Hello, this is the IRS. You owe $5,000 in back taxes."]
-    reply = actor.generate_response(history)
-    print(f"Hazel's Reply: {reply}")
+    # Start Flask server
+    port = int(os.environ.get("PORT", 8000))
+    app.run(host='0.0.0.0', port=port)

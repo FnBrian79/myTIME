@@ -47,6 +47,17 @@ class DeepfakeDetector:
 detector = DeepfakeDetector()
 current_status = {"scammer_type": "unknown", "confidence": 0.0}
 
+@app.route('/health')
+def health():
+    """Health check endpoint for service monitoring."""
+    return jsonify({
+        "status": "active",
+        "service": "architect",
+        "mode": "Sovereign",
+        "integrity": "verified",
+        "model_device": str(detector.device)
+    })
+
 @app.route('/status')
 def get_status():
     return jsonify(current_status)

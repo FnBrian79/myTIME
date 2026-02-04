@@ -7,6 +7,17 @@ from steward import Steward
 app = Flask(__name__)
 steward = Steward()
 
+@app.route('/health')
+def health():
+    """Health check endpoint for service monitoring."""
+    return jsonify({
+        "status": "active",
+        "service": "steward",
+        "mode": "Sovereign",
+        "integrity": "verified",
+        "db_path": steward.db_path
+    })
+
 @app.route('/api/leaderboard')
 def get_leaderboard():
     results = steward.get_leaderboard()
