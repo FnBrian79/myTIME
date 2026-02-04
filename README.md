@@ -13,10 +13,20 @@ Based on the principle of **"Giving it away to keep it,"** this template is a bl
 - **The Architect:** Quantizes call data into actionable security patterns.
 - **The Auditor:** Ensures cryptographic integrity via v2.4 AEAD Masks.
 - **The Steward:** Manages the Gamification Engine and Credit Ledger.
+- **The Bridge:** FastAPI WebSocket service bridging Foreman/Actor to ElevenLabs real-time voice synthesis.
+
+## 📱 Mobile Client (React Native)
+The `mobile/` directory contains a React Native Android app—the **Combat Ring** interface:
+- Real-time WebSocket audio streaming from the Dojo Bridge
+- Persona selector (Hazel / Brian / Winner)
+- SIP/VOIP integration via `android.permission.USE_SIP`
+- Cyberpunk UI matching the Steward dashboard aesthetic
 
 ## 🛠️ Stack & Deployment
 - **Local:** Docker + Ollama (Testing ground: "The Beast" / "Rock 15").
 - **Cloud:** GKE (Google Kubernetes Engine) for massive horizontal scaling.
+- **Mobile:** React Native Android client with SIP/VOIP Combat Ring UI.
+- **Voice:** ElevenLabs API via FastAPI WebSocket bridge (Dojo Bridge).
 - **Privacy:** Sovereign data masking; no Meta/Facebook hooks.
 
 ## 🎮 Gamification
@@ -41,6 +51,31 @@ Based on the principle of **"Giving it away to keep it,"** this template is a bl
    ```
 5. **Connect to Google Voice:**
    Point your SIP credentials in `config/asterisk/pjsip.conf` to your Google Voice or Twilio number.
+6. **Configure ElevenLabs (Dojo Bridge):**
+   ```bash
+   # Set your API key and voice IDs
+   export ELEVENLABS_API_KEY="your_key_here"
+   export ELEVENLABS_VOICE_ID="your_default_voice_id"
+   # Voice config template at: services/bridge/elevenlabs.config.json
+   ```
+7. **Launch the Mobile Client:**
+   ```bash
+   cd mobile && npm install && npx react-native run-android
+   ```
+
+## 🏗️ Architecture
+
+```
+Android Client (React Native)
+    ↕ WebSocket
+Dojo Bridge (FastAPI + ElevenLabs TTS)
+    ↕ HTTP
+Foreman (Triage) → Actor (Persona + Ollama) → Architect (Vosk ASR)
+    ↕                    ↕                          ↕
+Auditor (AEAD)      Ollama (LLM)            Asterisk (SIP)
+    ↕
+Steward (Gamification)
+```
 
 ---
 *Built for the future of society. Better than we were yesterday.*

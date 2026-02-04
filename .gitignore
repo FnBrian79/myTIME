@@ -18,3 +18,18 @@ logs/*.log
 *.swp
 __pycache__/
 *.pyc
+
+# ElevenLabs secrets (NEVER commit real keys)
+.env
+services/bridge/.env
+*.elevenlabs
+
+# React Native / Mobile
+mobile/node_modules/
+mobile/android/.gradle/
+mobile/android/app/build/
+mobile/android/build/
+mobile/android/local.properties
+mobile/ios/Pods/
+mobile/.metro-health-check*
+mobile/.bundle/

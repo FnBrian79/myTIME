@@ -1,0 +1,32 @@
+{
+  "_comment": "myTIME ElevenLabs Configuration - Copy to .env or set as environment variables",
+  "ELEVENLABS_API_KEY": "YOUR_ELEVENLABS_API_KEY",
+  "ELEVENLABS_VOICE_ID": "YOUR_VOICE_ID",
+  "ELEVENLABS_MODEL_ID": "eleven_monolingual_v1",
+  "voices": {
+    "hazel": {
+      "voice_id": "YOUR_HAZEL_VOICE_ID",
+      "description": "Hard-of-Hearing Hazel - 75-year-old confused grandmother",
+      "stability": 0.4,
+      "similarity_boost": 0.8
+    },
+    "brian": {
+      "voice_id": "YOUR_BRIAN_VOICE_ID",
+      "description": "Tech-Illiterate Brian - Distractible, verbose",
+      "stability": 0.5,
+      "similarity_boost": 0.75
+    },
+    "winner": {
+      "voice_id": "YOUR_WINNER_VOICE_ID",
+      "description": "Excited PCH Winner - Gullible, emotional",
+      "stability": 0.3,
+      "similarity_boost": 0.9
+    }
+  },
+  "voice_settings_defaults": {
+    "stability": 0.5,
+    "similarity_boost": 0.75,
+    "style": 0.0,
+    "use_speaker_boost": true
+  }
+}
