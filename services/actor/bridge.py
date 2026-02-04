@@ -21,27 +21,39 @@ client = AsyncElevenLabs(api_key=ELEVENLABS_API_KEY)
 async def handle_asterisk_connection(reader, writer):
     print("🚀 Scammer connected to the Dojo.")
     
-    # Example handover context from Ollama (this would be dynamic in production)
-    response_text = "Wait, hold on... you said you're from where? My dog Steve just stepped on my keyboard."
-    
-    try:
-        async for audio_chunk in client.generate(
-            text=response_text, 
-            voice=VOICE_ID, 
-            model=voice_config.get("model_id", "eleven_flash_v2_5"),
-            stream=True
-        ):
-            # AudioSocket expects raw SLIN (16-bit Signed Linear)
-            # TBD: Conversion layer for raw AudioSocket format
-            writer.write(audio_chunk)
-            await writer.drain()
-            
-    except Exception as e:
-        print(f"❌ Voice Bridge Error: {e}")
-    finally:
-        print("🔌 Session Ended.")
-        writer.close()
-        await writer.wait_closed()
+    # Task to read from scammer (Barge-in detection)
+    async def read_from_scammer():
+        while True:
+            try:
+                data = await reader.read(320) # Read raw audio frames
+                if not data: break
+                # Logic to detect 'Interruptions': 
+                # If Brian (user) is speaking or AI should 'Barge in'
+                # if detect_voice_activity(data): trigger_bargin()
+            except Exception as e:
+                print(f"Read error: {e}")
+                break
+
+    # Task to write to scammer (AI Voice)
+    async def write_to_scammer():
+        response_text = "Wait, hold on... you said you're from where? My dog Steve just stepped on my keyboard."
+        try:
+            async for audio_chunk in client.generate(
+                text=response_text, 
+                voice=VOICE_ID, 
+                model=voice_config.get("model_id", "eleven_flash_v2_5"),
+                stream=True
+            ):
+                writer.write(audio_chunk)
+                await writer.drain()
+        except Exception as e:
+            print(f"Write error: {e}")
+
+    # Run read and write tasks concurrently
+    await asyncio.gather(read_from_scammer(), write_to_scammer())
+    print("🔌 Session Ended.")
+    writer.close()
+    await writer.wait_closed()
 
 async def main():
     server = await asyncio.start_server(handle_asterisk_connection, ASTERISK_IP, AUDIOSOCKET_PORT)

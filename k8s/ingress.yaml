@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mytime-ingress
+  annotations:
+    kubernetes.io/ingress.class: gce
+    networking.gke.io/managed-certificates: mytime-cert
+spec:
+  rules:
+  - host: mytime.fnbrian.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: mytime-steward
+            port:
+              number: 80

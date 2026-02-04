@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mytime-dojo
+  labels:
+    app: mytime
+    component: dojo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mytime
+      component: dojo
+  template:
+    metadata:
+      labels:
+        app: mytime
+        component: dojo
+    spec:
+      containers:
+      - name: actor
+        image: gcr.io/fnbrian79/mytime-actor:latest
+        ports:
+        - containerPort: 9092
+        env:
+        - name: ELEVENLABS_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: mytime-secrets
+              key: elevenlabs-api-key
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+      - name: steward
+        image: gcr.io/fnbrian79/mytime-steward:latest
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: data-volume
+          mountPath: /data/vault
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: mytime-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mytime-asterisk
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mytime
+      component: asterisk
+  template:
+    metadata:
+      labels:
+        app: mytime
+        component: asterisk
+    spec:
+      containers:
+      - name: asterisk
+        image: gcr.io/fnbrian79/mytime-asterisk:latest
+        ports:
+        - containerPort: 5060
+          protocol: UDP
+        - containerPort: 10000
+          protocol: UDP
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/asterisk
+      volumes:
+      - name: config-volume
+        configMap:
+          name: asterisk-config
