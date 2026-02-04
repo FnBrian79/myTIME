@@ -45,6 +45,8 @@ services:
     build:
       context: ./services/architect
     container_name: gauntlet-architect
+    ports:
+      - "5000:5000"
     deploy:
       resources:
         reservations:
@@ -55,6 +57,7 @@ services:
     environment:
       - OLLAMA_HOST=http://ollama:11434
       - ACTOR_HOST=http://actor:8000
+      - PORT=5000
     volumes:
       - ./services/architect/observer_prompt.txt:/app/prompts/observer_prompt.txt
       - ./learning_repo/models:/app/models
@@ -74,9 +77,11 @@ services:
       - DEFAULT_PERSONA=hazel
       - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
       - AUDIOSOCKET_PORT=9092
+      - PORT=8000
     depends_on:
       - ollama
     ports:
+      - "8000:8000"
       - "9092:9092"
     networks:
       - dojo-mesh
@@ -86,9 +91,14 @@ services:
     build:
       context: ./services/auditor
     container_name: gauntlet-auditor
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
     volumes:
       - ./learning_repo:/data/vault
       - ./logs:/var/log/gauntlet
+      - ./config:/app/config
     networks:
       - dojo-mesh
 

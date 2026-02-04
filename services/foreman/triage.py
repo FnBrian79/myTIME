@@ -7,6 +7,16 @@ app = Flask(__name__)
 # The Blacklist/Learning Repo connection
 DATABASE_URL = os.environ.get("LEARNING_REPO_URL", "http://learning-repo:5000/check-number")
 
+@app.route('/health')
+def health():
+    """Health check endpoint for service monitoring."""
+    return jsonify({
+        "status": "active",
+        "service": "foreman",
+        "mode": "Sovereign",
+        "integrity": "verified"
+    })
+
 @app.route('/triage', methods=['POST'])
 def triage_call():
     incoming_number = request.json.get('number')

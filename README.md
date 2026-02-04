@@ -27,20 +27,28 @@ Based on the principle of **"Giving it away to keep it,"** this template is a bl
 ## 🛠️ Quick Start for the Building Crew
 1. **Clone the Repo:**
    ```bash
-   git clone https://github.com/FnBrian79/scam-waster-gauntlet.git
+   git clone https://github.com/FnBrian79/myTIME.git
+   cd myTIME
    ```
-2. **Configure your "Sovereign" Masks:**
-   Drop your v2.4 AEAD keys into the `services/auditor/keys` folder to ensure all harvested scam data is cryptographically signed.
-3. **Ignite the Gauntlet:**
+2. **One-Command Setup:**
    ```bash
-   docker compose up -d
+   ./run.sh
    ```
+   This creates directories, generates your sovereign AEAD master key, and launches all services.
+
+3. **Verify the Crew is Active:**
+   ```bash
+   ./check_health.sh
+   ```
+
 4. **Pull the Persona Models:**
    ```bash
    docker exec -it gauntlet-actor ollama pull llama3
    ```
 5. **Connect to Google Voice:**
    Point your SIP credentials in `config/asterisk/pjsip.conf` to your Google Voice or Twilio number.
+
+📖 **For detailed setup instructions, see [SETUP.md](SETUP.md)**
 
 ---
 *Built for the future of society. Better than we were yesterday.*
